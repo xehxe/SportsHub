@@ -1,0 +1,5 @@
+/* Minimal fallback styling if the Tailwind CDN is unreachable.
+   The templates are functional without this file; it just keeps
+   the page legible rather than unstyled. */
+body { background: #0E1317; color: #EDF1F4; font-family: Inter, sans-serif; }
+a { color: inherit; }

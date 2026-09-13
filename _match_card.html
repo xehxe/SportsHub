@@ -1,0 +1,67 @@
+<article class="bg-surface border border-hairline rounded-lg overflow-hidden">
+  <img src="/matchup/{{ game.id }}.png" alt="" class="w-full aspect-video object-cover" loading="lazy" />
+
+  <div class="p-4">
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-xs text-muted">{{ leagues_by_key[game.league_key].label if game.league_key in leagues_by_key else game.league_key.upper() }}</span>
+
+    {% if game.status == "live" %}
+      <span class="flex items-center gap-1.5 text-xs text-live">
+        <span class="live-dot inline-block w-1.5 h-1.5 rounded-full bg-live"></span>
+        {{ game.status_detail or "Live" }}
+      </span>
+    {% elif game.status == "final" %}
+      <span class="text-xs text-muted">Final</span>
+    {% elif game.status == "postponed" %}
+      <span class="text-xs text-muted">Postponed</span>
+    {% else %}
+      <span class="text-xs text-muted" data-utc="{{ game.kickoff_utc.isoformat() }}">{{ game.kickoff_utc }}</span>
+    {% endif %}
+  </div>
+
+  <div class="space-y-2.5">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3 min-w-0">
+        {% if game.away_team.logo_url %}
+        <img src="{{ game.away_team.logo_url }}" alt="" class="w-8 h-8 object-contain shrink-0" loading="lazy" />
+        {% else %}
+        <div class="w-8 h-8 rounded bg-raised shrink-0"></div>
+        {% endif %}
+        <span class="truncate">{{ game.away_team.display_name }}</span>
+      </div>
+      <span class="font-score text-2xl tabular-nums">
+        {{ game.away_score if game.away_score is not none else "—" }}
+      </span>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3 min-w-0">
+        {% if game.home_team.logo_url %}
+        <img src="{{ game.home_team.logo_url }}" alt="" class="w-8 h-8 object-contain shrink-0" loading="lazy" />
+        {% else %}
+        <div class="w-8 h-8 rounded bg-raised shrink-0"></div>
+        {% endif %}
+        <span class="truncate">{{ game.home_team.display_name }}</span>
+      </div>
+      <span class="font-score text-2xl tabular-nums">
+        {{ game.home_score if game.home_score is not none else "—" }}
+      </span>
+    </div>
+  </div>
+
+  {% if game.venue or game.broadcasts %}
+  <div class="mt-3 pt-3 border-t border-hairline flex items-center justify-between text-xs text-muted">
+    <span class="truncate">{{ game.venue }}</span>
+    {% if game.broadcasts %}
+    <span class="shrink-0 flex items-center gap-2">
+      {{ game.broadcasts | map(attribute="network") | join(", ") }}
+      {% set watchable = game.broadcasts | selectattr("stream_url") | list %}
+      {% if watchable %}
+      <a href="{{ watchable[0].stream_url }}" class="text-amber hover:underline">Watch</a>
+      {% endif %}
+    </span>
+    {% endif %}
+  </div>
+  {% endif %}
+  </div>
+</article>

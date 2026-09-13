@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}SportsHub{% endblock %}</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/3.4.10/tailwind.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: "#0E1317",
+            surface: "#161D23",
+            raised: "#1E262D",
+            hairline: "#2A333B",
+            ink: "#EDF1F4",
+            muted: "#8A97A3",
+            amber: "#FFB020",
+            live: "#34D399",
+          },
+          fontFamily: {
+            score: ["'Barlow Condensed'", "sans-serif"],
+            body: ["'Inter'", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body { background-color: #0E1317; }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+    .live-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+    ::-webkit-scrollbar { height: 6px; width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #2A333B; border-radius: 3px; }
+  </style>
+</head>
+<body class="font-body text-ink min-h-screen">
+  {% block content %}{% endblock %}
+
+  <script>
+    // Convert every element carrying a UTC timestamp into the viewer's
+    // local time, so the server can stay UTC-only end to end.
+    document.querySelectorAll('[data-utc]').forEach((el) => {
+      const dt = new Date(el.getAttribute('data-utc'));
+      if (!isNaN(dt)) {
+        el.textContent = dt.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      }
+    });
+  </script>
+</body>
+</html>

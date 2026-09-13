@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}SportsHub — schedules & scores{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-6 py-10">
+
+  <header class="flex items-baseline justify-between mb-8">
+    <div>
+      <h1 class="font-score text-5xl font-semibold tracking-tight leading-none">SportsHub</h1>
+      <p class="text-muted mt-1">Schedules, scores, and where to watch — pulled straight from the source.</p>
+    </div>
+    {% if last_refresh %}
+    <p class="text-sm text-muted text-right hidden sm:block">
+      Last synced
+      <span data-utc="{{ last_refresh.isoformat() }}">{{ last_refresh }}</span>
+      &middot; <a href="/settings" class="hover:text-ink">Connect IPTV</a>
+    </p>
+    {% else %}
+    <a href="/settings" class="text-sm text-muted hover:text-ink">Connect IPTV</a>
+    {% endif %}
+  </header>
+
+  <nav class="flex flex-wrap gap-x-6 gap-y-2 mb-10 border-b border-hairline pb-4">
+    <a href="/?league=all"
+       class="text-sm {% if active_league == 'all' %}text-amber border-b-2 border-amber pb-1{% else %}text-muted hover:text-ink{% endif %}">
+      All leagues
+    </a>
+    {% for lg in leagues %}
+    <a href="/?league={{ lg.key }}"
+       class="text-sm {% if active_league == lg.key %}text-amber border-b-2 border-amber pb-1{% else %}text-muted hover:text-ink{% endif %}">
+      {{ lg.label }}
+    </a>
+    {% endfor %}
+  </nav>
+
+  {% if not grouped_games %}
+  <div class="border border-hairline rounded-lg p-10 text-center">
+    <p class="text-lg">No games loaded yet.</p>
+    <p class="text-muted mt-1">The background sync runs every 90 seconds — check back shortly, or hit
+      <code class="text-amber">/api/sync</code> to pull immediately.</p>
+  </div>
+  {% endif %}
+
+  {% for day, games in grouped_games.items() %}
+  <section class="mb-10">
+    <div class="flex items-center gap-4 mb-4">
+      <h2 class="text-sm text-muted whitespace-nowrap">{{ day }}</h2>
+      <div class="h-px bg-hairline flex-1"></div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for game in games %}
+        {% include "_match_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}SportsHub — connect a source{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-6 py-10">
+  <a href="/" class="text-sm text-muted hover:text-ink">&larr; Back to schedule</a>
+  <h1 class="font-score text-4xl font-semibold mt-3 mb-1">Connect a channel source</h1>
+  <p class="text-muted mb-8">
+    Add an Xtream Codes login or an M3U playlist URL. SportsHub scans it for
+    sports channels and links them to games automatically by network name.
+  </p>
+
+  {% if sources %}
+  <div class="mb-10 space-y-2">
+    {% for s in sources %}
+    <div class="flex items-center justify-between bg-surface border border-hairline rounded-lg px-4 py-3">
+      <div>
+        <p>{{ s.label }} <span class="text-muted text-sm">({{ s.kind }})</span></p>
+        <p class="text-xs text-muted">
+          {{ s.channel_count }} sports channels found
+          {% if s.last_synced_at %}&middot; last synced <span data-utc="{{ s.last_synced_at.isoformat() }}">{{ s.last_synced_at }}</span>{% endif %}
+        </p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="post" action="/settings/iptv" class="space-y-5" id="iptv-form">
+    <div>
+      <label class="block text-sm text-muted mb-1">Label</label>
+      <input name="label" placeholder="e.g. My IPTV" class="w-full bg-surface border border-hairline rounded-md px-3 py-2" />
+    </div>
+
+    <div class="flex gap-6 text-sm">
+      <label class="flex items-center gap-2">
+        <input type="radio" name="kind" value="xtream" checked onchange="toggleKind()" /> Xtream Codes
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="radio" name="kind" value="m3u" onchange="toggleKind()" /> M3U playlist URL
+      </label>
+    </div>
+
+    <div id="xtream-fields" class="space-y-4">
+      <div>
+        <label class="block text-sm text-muted mb-1">Panel URL</label>
+        <input name="base_url" placeholder="http://provider.example:8080" class="w-full bg-surface border border-hairline rounded-md px-3 py-2" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm text-muted mb-1">Username</label>
+          <input name="username" class="w-full bg-surface border border-hairline rounded-md px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm text-muted mb-1">Password</label>
+          <input name="password" type="password" class="w-full bg-surface border border-hairline rounded-md px-3 py-2" />
+        </div>
+      </div>
+    </div>
+
+    <div id="m3u-fields" class="hidden">
+      <label class="block text-sm text-muted mb-1">M3U URL</label>
+      <input name="m3u_url" placeholder="http://provider.example/get.php?username=...&password=...&type=m3u" class="w-full bg-surface border border-hairline rounded-md px-3 py-2" />
+    </div>
+
+    <button type="submit" class="bg-amber text-base font-medium px-5 py-2.5 rounded-md">Connect and sync</button>
+  </form>
+
+  <script>
+    function toggleKind() {
+      const isXtream = document.querySelector('input[name=kind]:checked').value === 'xtream';
+      document.getElementById('xtream-fields').classList.toggle('hidden', !isXtream);
+      document.getElementById('m3u-fields').classList.toggle('hidden', isXtream);
+    }
+  </script>
+</div>
+{% endblock %}
